@@ -1,105 +1,107 @@
-import React,{useState} from 'react'
 
+import React from 'react';
+import {
+ StyleSheet,
+ Text,
+ TextInput,
+ TouchableOpacity,
+ View
+} from 'react-native';
 
-
-const tabelaIMC=()=>{
-  return(
-    <table>
-      <thead>
-        <tr>
-          <th>
-            Classificação
-          </th>
-          <th>
-            IMC
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Abaixo do Peso</td>
-          <td>Abaixo de 18,5</td>
-        </tr>
-        <tr>
-          <td>Peso Normal</td>
-          <td>Entre 18,5 e 24,9</td>
-        </tr>
-        <tr>
-          <td>Sobrepeso</td>
-          <td>Entre 25 e 29,9</td>
-        </tr>
-        <tr>
-          <td>Obesidade Grau I</td>
-          <td>Entre 30 e 34,9</td>
-        </tr>
-        <tr>
-          <td>Obesidade Grau II</td>
-          <td>Entre 35 e 39,9</td>
-        </tr>
-        <tr>
-          <td>Obesidade Grau III ou Morbida</td>
-          <td>Acima de 40</td>
-        </tr>
-      </tbody>
-    </table>    
-  )
-}
-
-const dadosPeso=(p, sp)=>{
-  return(
-    <div>
-      <label>
-        Peso
-        <input type="text" value ={p} onChange={(e)=>{sp(e.target.value)}}/>
-        </label>
-    </div>
-  )
-}
-
-const dadosAltura=(a, sa)=>{
-  return(
-    <div>
-      <label>
-        Altura
-        <input type="text" value ={a} onChange={(e)=>{sa(e.target.value)}}/>
-      </label>
-    </div>
-  )
-}
-
-const fCalcular =(p, a, sr)=>{
-  
-    const calc=()=>{
-      sr(p/(a*a))
+export default class App extends React.Component {
+  constructor(props){
+    super(props)
+    this.state = {altura:0,massa:0,resultado:0,resultadoText:""}
+    this.calcular = this.calcular.bind(this)
+  }
+  calcular(){
+   let imc = this.state.massa / (this.state.altura * this.state.altura)
+   let s = this.state
+   s.resultado = imc
+   if(s.resultado < 16){
+     s.resultadoText ='Muito abaixo do peso'
+   }
+    else if (s.resultado < 17){
+     s.resultadoText ='Moderadamente abaixo do peso'
     }
-    return(
-      <div>
-        <buttom onClick={calc}>Calcular</buttom>
-      </div>
-    )
+    else if (s.resultado < 18.5){
+     s.resultadoText ='Abaixo do peso'
+    }
+    else if (s.resultado < 25) {
+     s.resultadoText ='Saudavel'
+    }
+    else if (s.resultado < 30) {
+     s.resultadoText ='Sobrepeso'
+    }
+    else if (s.resultado < 35) {
+     s.resultadoText ='Obesidade Grau 1°'
+    }
+    else if (s.resultado < 40) {
+      s.resultadoText ='Obesidade Grau 2°'
+    }
+    else{
+      s.resultadoText ='Obesidade Grau 3°'
+    }
+   this.setState(s)
+
+
+
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <View style={styles.entrada}>
+          <TextInput  placeholder="Altura" style={styles.caixasEntrada} keyboardType="numeric" style={styles.input} onChangeText={(altura)=>{this.setState({altura})}}/>
+          <TextInput placeholder="Peso" style={styles.caixasEntrada} keyboardType="numeric" style={styles.input} onChangeText={(massa)=>{this.setState({massa})}}/>
+        </View>
+        <TouchableOpacity style={styles.button} onPress={this.calcular}><Text style={styles.buttontext}>Calcular</Text></TouchableOpacity>
+        <View>
+        <Text style={styles.resultado}>IMC</Text>
+          <Text style={styles.resultado}>{this.state.resultado.toFixed(2)}</Text>
+          <Text style={[styles.resultado,{fontSize:20}]}>{this.state.resultadoText}</Text>
+        </View>
+    </View>
+    );
+  }
 }
 
-const fResultado=(r)=>{
-  return(
-    <div>
-      <p>Resultado: {r.toFixed(2)}</p>
-    </div>
-  )
-}
-
-export default function App(){
-
-  const [peso, setPeso]=useState(0)
-  const [altura, setAltura]=useState(0)
-  const [resultado, setResultado]=useState(0)
-
-  return(
-    <>
-      {dadosPeso(peso,setPeso)}
-      {dadosAltura(altura,setAltura)}
-      {fCalcular(peso,altura,setResultado)}
-      {fResultado(resultado)}
-      {tabelaIMC()}
-    </>
-  );
-}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'lightblue',
+  },
+  entrada:{
+    flexDirection:'row',
+    color: "black",
+    backgroundColor:"#4682B4",
+  },
+  input:{
+    height:80,
+    textAlign:"center",
+    width:"50%",
+    fontSize:50,
+    marginTop:34,
+    color: "black"
+  },
+  button:{
+   backgroundColor:"#9ACD32",
+  },
+  buttontext:{    
+    textAlign:"center",
+    padding:20,
+    fontSize:25,
+    fontWeight:'bold',
+    color:"green",       
+  },
+  resultado:{
+    alignSelf:"center",
+    color:"black",
+    fontSize:45,
+    fontWeight:'bold',
+    padding: 6,
+  },
+  caixasEntrada:{
+    color:"black",
+  }
+});
